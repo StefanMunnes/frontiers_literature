@@ -15,7 +15,7 @@ it <- lapply(list(min = revs_all_min, max = revs_all_max), function(data) {
 ## create vocabulary
 # just 1-grams
 vocab_1 <- pblapply(it, function(docs) {
-  create_vocabulary(docs) %>%
+  create_vocabulary(docs, ngram = c(ngram_min = 1L, ngram_max = 1L)) %>%
     prune_vocabulary(term_count_min = 5) %>%
     vocab_vectorizer()
 })
