@@ -112,10 +112,17 @@ dict_glove_pre_hc <- seeds2dicts(list(wv_deepset), lapply(seeds_hc_min, tolower)
 dict_glove_pre_rz <- seeds2dicts(list(wv_deepset), lapply(seeds_rz_min, tolower))
 
 
-dict_glove_pre <- lapply(list(hc = dict_glove_pre_hc[[1]],
-                              rz = dict_glove_pre_rz[[1]]), function(dict) {
-                                filter_words(dict, min_sim = .3)
-                              })
+dict_glove_pre <- lapply(c(0.3, 0.4, 0.5), function(similarity) {
+  
+  lapply(list(hc = dict_glove_pre_hc[[1]], 
+              rz = dict_glove_pre_rz[[1]]), function(dict) {
+                
+     filter_words(dict, min_sim = similarity)
+  })
+})
+
+names(dict_glove_pre) <- c("0.3", "0.4", "0.5")
+
 
 
 # ---- 4. save all dictionarys ----

@@ -31,10 +31,13 @@ names(test_glove[[2]]) <- min_max
 
 # ---- 2. dictionary from pre-trained GloVe model ----
 
-test_glove_pre <- lapply(glove_dict_ls$pre, function(seed) {
-
-  dict_run(revs_coded_prep$min, as.dictionary(seed), case_in = TRUE) %>%
-    test_sent()
+test_glove_pre <- lapply(glove_dict_ls$pre, function(similarity) {
+  
+  lapply(similarity, function(seed) {
+    
+    dict_run(revs_coded_prep$min, as.dictionary(seed), case_in = TRUE) %>%
+      test_sent()
+  })
 })
 
 
