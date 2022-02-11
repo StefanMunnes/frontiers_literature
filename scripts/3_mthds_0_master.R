@@ -16,7 +16,8 @@ dict_run <- function(data, dict, case_in = FALSE) {
     cbind(docvars(tokens)) %>%
     rename_with(~ substr(.x, 1, 3), starts_with(c("pos", "neg"))) %>%
     mutate(sentiment = (pos - neg) / (pos + neg),
-           fre = pos + neg)
+           fre = pos + neg,
+           diff = sent_hc_z - sentiment)
 
   return(sent_df)
 }
@@ -34,7 +35,7 @@ test_sent <- function(data, freq = TRUE) {
   diff1  <- nrow(sent_df[sent_df$diff1 == TRUE, ])
   diff2  <- nrow(sent_df[sent_df$diff2 == TRUE, ])
 
-  test <- list(num = num, cor = cor, diff = list("> 1 sd" = diff1, 
+  test <- list(num = num, cor = cor, diff = list("> 1 sd" = diff1,
                                                  "> 2 sd" = diff2))
 
   if (freq == TRUE) {
