@@ -24,13 +24,18 @@ dict_run <- function(data, dict, case_in = FALSE) {
 # function to test reliability of methods
 test_sent <- function(data, freq = TRUE) {
 
-  sent_df <- mutate(data, sent_z = scale(sentiment))
+  sent_df <- mutate(data,
+                    sent_z = scale(sentiment),
+                    diff1 = (sent_hc_z - sent_z) > 1,
+                    diff2 = (sent_hc_z - sent_z) > 2)
 
   num <- nrow(sent_df[sent_df$fre > 0,])
-  cor <- cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs")
-  # icc <- icc(select(sent_df, sent_hc_z, sent_z))
+  cor <- as.numeric(cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs"))
+  diff1  <- nrow(sent_df[sent_df$diff1 == TRUE, ])
+  diff2  <- nrow(sent_df[sent_df$diff2 == TRUE, ])
 
-  test <- list(num = num, cor = cor)
+  test <- list(num = num, cor = cor, diff = list("> 1 sd" = diff1, 
+                                                 "> 2 sd" = diff2))
 
   if (freq == TRUE) {
     fre  <- mean(sent_df$fre, na.rm = TRUE)
