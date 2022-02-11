@@ -16,7 +16,8 @@ dict_run <- function(data, dict, case_in = FALSE) {
     cbind(docvars(tokens)) %>%
     rename_with(~ substr(.x, 1, 3), starts_with(c("pos", "neg"))) %>%
     mutate(sentiment = (pos - neg) / (pos + neg),
-           fre = pos + neg)
+           fre = pos + neg,
+           diff = sent_hc_z - sentiment)
 
   return(sent_df)
 }
@@ -26,11 +27,11 @@ test_sent <- function(data, freq = TRUE) {
 
   sent_df <- mutate(data, sent_z = scale(sentiment))
 
-  num <- nrow(sent_df[sent_df$fre > 0,])
-  cor <- cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs")
-  # icc <- icc(select(sent_df, sent_hc_z, sent_z))
+  num  <- nrow(sent_df[sent_df$fre > 0,])
+  cor  <- as.numeric(cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs"))
+  diff <- summary(sent_df$diff)
 
-  test <- list(num = num, cor = cor)
+  test <- list(num = num, cor = cor, diff = diff)
 
   if (freq == TRUE) {
     fre  <- mean(sent_df$fre, na.rm = TRUE)
