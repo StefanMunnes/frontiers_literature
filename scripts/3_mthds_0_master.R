@@ -23,14 +23,20 @@ dict_run <- function(data, dict, case_in = FALSE) {
 }
 
 # function to test reliability of methods
-test_sent <- function(data, freq = TRUE) {
+test_sent <- function(data, num = TRUE, freq = TRUE) {
 
   sent_df <- mutate(data,
                     sent_z = scale(sentiment),
                     diff1 = (sent_hc_z - sent_z) > 1,
                     diff2 = (sent_hc_z - sent_z) > 2)
 
-  num <- nrow(sent_df[sent_df$fre > 0,])
+  if (num == TRUE) {
+    num <- nrow(sent_df[sent_df$fre > 0,])
+  }
+  if (num == FALSE) {
+    num <- nrow(sent_df)
+  }
+
   cor <- as.numeric(cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs"))
   diff1  <- nrow(sent_df[sent_df$diff1 == TRUE, ])
   diff2  <- nrow(sent_df[sent_df$diff2 == TRUE, ])
