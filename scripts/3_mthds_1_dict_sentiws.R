@@ -20,7 +20,7 @@ dict_sws <- list(min = dict_sws_min, max = dict_sws_max)
 min_max <- c("min", "max")
 
 test_sws <- lapply(min_max, function(prep) {
-  dict_run(revs_coded_prep[[prep]], dict_sws[[prep]]) %>% 
+  dict_run(revs_coded_prep[[prep]], dict_sws[[prep]]) %>%
     test_sent()
 })
 
@@ -40,19 +40,13 @@ dict_sws_not <- lapply(dict_sws, function(min_max) {
 })
 
 # create tokens with negations
-revs_coded_not <- lapply(revs_coded_prep, function(data) {
-
-  tokens_replace(data,
-                 pattern = not_words,
-                 replacement = rep("not", length(not_words))) %>%
-    tokens_compound(pattern = phrase(c("not *")))
-})
+revs_coded_not <- lapply(revs_coded_prep, not_tokens)
 
 
 # ---- 2.2 use dictionary and calculate reliability meausures ----
 test_sws_not <- lapply(min_max, function(prep) {
 
-  dict_run(revs_coded_not[[prep]], dict_sws_not[[prep]]) %>% 
+  dict_run(revs_coded_not[[prep]], dict_sws_not[[prep]]) %>%
     test_sent()
 })
 

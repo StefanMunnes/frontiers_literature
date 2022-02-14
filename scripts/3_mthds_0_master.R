@@ -7,6 +7,17 @@ dict_max <- function(sent) {
     unique()
 }
 
+# list of words for negations in the corpus for dictionarys approaches
+not_words <- c("nicht", "nichts", "kein", "keine", "keinen", "ohne")
+
+# function to create tokens with negations in reviews
+not_tokens <- function(data) {
+  tokens_replace(data,
+                 pattern = not_words,
+                 replacement = rep("not", length(not_words))) %>%
+    tokens_compound(pattern = phrase(c("not *")))
+}
+
 # function to run dictionary approaches
 dict_run <- function(data, dict, case_in = FALSE) {
 
@@ -57,10 +68,6 @@ test_sent <- function(data, num = TRUE, freq = TRUE) {
 # prepare empty list to store results from different methods
 test <- list()
 saveRDS(test, "../data/test_results.RDS")
-
-
-# list of words for negations in the corpus for dictionarys approaches
-not_words <- c("nicht", "nichts", "kein", "keine", "keinen", "ohne")
 
 
 # 1. Dictionary: sentiWS
