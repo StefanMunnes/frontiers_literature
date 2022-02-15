@@ -15,7 +15,7 @@ dict_rauh_nonot <- list(pos = unlist(dict_rauh_ls[4]),
 
 
 dict_rauh_not <- list(pos = c(dict_rauh_ls$neg_negative, dict_rauh_ls$positive),
-                      neg = c(dict_rauh_ls$neg_positive, dict_rauh_ls$neg_negative)) %>%
+                      neg = c(dict_rauh_ls$neg_positive, dict_rauh_ls$negative)) %>%
   lapply(function(x) str_replace_all(x, " ", "_")) %>%
   dictionary()
 
