@@ -115,18 +115,21 @@ revs_coded_icc_4 <- revs_coded_icc_3 %>%
 
 # create scatter plot for ratings of double-coded reviews for each rater group
 revs_coded_plot <- ggplot(revs_coded_icc_4, aes(x = sent_1, y = sent_2)) +
-  geom_point(alpha = .2, size = 1.2) +
+  geom_point(alpha = .1, size = 1.8) +
   facet_grid(coder_2 ~ coder_1, drop = T) +
   geom_abline(data = revs_coded_icc_4, aes(intercept = intercept, slope = slope), alpha = .6) +
-  # geom_smooth(method = "lm", se = FALSE, color="red") +
-  geom_text(x = 1, y = 6.8, size = 1.8, hjust = 0, aes(label = paste("ICC:", icc))) +
-  geom_text(x = 1, y = 6.0, size = 1.8, hjust = 0, aes(label = paste("N:", gr_n))) +
+  geom_text(x = 1, y = 6.8, size = 2.2, hjust = 0, aes(label = paste("ICC:", icc))) +
+  geom_text(x = 1, y = 6.2, size = 2.2, hjust = 0, aes(label = paste("N:", gr_n))) +
   scale_y_continuous(breaks = seq(1, 7, 1)) +
   scale_x_continuous(breaks = seq(1, 7, 1)) +
   theme_bw() +
   theme(axis.title = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text = element_text(size = 6.5),
-        plot.caption = element_text(size = 10, hjust = 0))
+        axis.text = element_text(size = 7.5))
 
-ggsave(filename = "../graphs/revs_coded_icc.pdf", revs_coded_plot)
+ggsave(filename = "../graphs/revs_coded_icc.pdf", revs_coded_plot, 
+       width = 20, height = 20, units = "cm")
+ggsave(filename = "../graphs/revs_coded_icc.eps", revs_coded_plot, 
+       width = 20, height = 20, units = "cm")
+ggsave(filename = "../graphs/revs_coded_icc.jpeg", revs_coded_plot, 
+       width = 20, height = 20, units = "cm")
