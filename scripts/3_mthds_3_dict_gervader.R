@@ -148,7 +148,7 @@ remove(GERVADER__negative.tsv, GERVADER_positive.tsv, GERVADER__neutral.tsv, lis
 
 gervader_result <- lapply(list(min = gervader_result_min,
                                max = gervader_result_max), function (x) {
-  rename(x sentiment = V3) %>%
+  rename(x, sentiment = V3) %>%
     filter(sentiment != 0)
 })
 
