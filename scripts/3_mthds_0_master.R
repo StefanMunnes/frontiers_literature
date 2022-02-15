@@ -45,7 +45,7 @@ test_sent <- function(data, num = TRUE, freq = TRUE) {
     num <- nrow(sent_df[sent_df$fre > 0,])
   }
   if (num == FALSE) {
-    num <- nrow(filter(sent_df, !is.na(sentimentsent_df)))
+    num <- nrow(filter(sent_df, !is.na(sentiment)))
   }
 
   cor <- as.numeric(cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs"))
