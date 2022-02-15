@@ -2,6 +2,7 @@ if(!require("pacman")) install.packages("pacman")
 pacman::p_load(
   "devtools",
   "dplyr",
+  "ggplot2",
   "irr",
   "irrNA",
   "magrittr",
