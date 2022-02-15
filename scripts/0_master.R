@@ -1,9 +1,30 @@
 if(!require("pacman")) install.packages("pacman")
-pacman::p_load("dplyr", "tidyr", "stringr", "stringi", "rdnb", "openxlsx",
-               "irr", "irrNA", "scales", "parallel", "pbapply",
-               "quanteda", "quanteda.sentiment", 
-               "stopwords", "SnowballC", "text2vec", "word2vec",
-               "vroom", "readxl", "devtools", "magrittr")
+pacman::p_load(
+  "devtools",
+  "dplyr",
+  "irr",
+  "irrNA",
+  "magrittr",
+  "openxlsx",
+  "parallel",
+  "pbapply",
+  "quanteda",
+  "quanteda.sentiment",
+  "quanteda.textmodels",
+  "quanteda.textplots",
+  "rdnb",
+  "readxl",
+  "scales",
+  "SnowballC",
+  "stopwords",
+  "stringi",
+  "stringr",
+  "text2vec",
+  "tibble",
+  "tidyr",
+  "vroom",
+  "word2vec"
+)
 
 
 # 1. scrape all books and additional informations from Perlentaucher
