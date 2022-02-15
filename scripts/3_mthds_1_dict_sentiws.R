@@ -15,6 +15,10 @@ dict_sws_max <- lapply(as.list(dict_sws_min), dict_max) %>%
 
 dict_sws <- list(min = dict_sws_min, max = dict_sws_max)
 
+# get length of dictionaries
+test_len_sws <- lapply(dict_sws, function(x) lapply(x, length))
+
+
 
 # ---- 1.2 use dictionary and calculate reliability meausures ----
 min_max <- c("min", "max")
@@ -25,6 +29,7 @@ test_sws <- lapply(min_max, function(prep) {
 })
 
 names(test_sws) <- min_max
+
 
 
 # ---- 2.1 add negations ----
@@ -39,8 +44,13 @@ dict_sws_not <- lapply(dict_sws, function(min_max) {
   dictionary()
 })
 
+# get length of dictionaries
+test_len_sws_not <- lapply(dict_sws_not, function(x) lapply(x, length))
+
+
 # create tokens with negations
 revs_coded_not <- lapply(revs_coded_prep, not_tokens)
+
 
 
 # ---- 2.2 use dictionary and calculate reliability meausures ----
@@ -53,10 +63,14 @@ test_sws_not <- lapply(min_max, function(prep) {
 names(test_sws_not) <- min_max
 
 
+
 # ---- 3. store test results ----
 test <- readRDS("../data/test_results.RDS")
 
 test$sws <- test_sws
-test$sws_not  <- test_sws_not
+test$sws_not <- test_sws_not
+
+test$len$sws <- test_len_sws
+test$len$sws_not <- test_len_sws_not
 
 saveRDS(test, "../data/test_results.RDS")
