@@ -27,7 +27,7 @@ dict_run <- function(data, dict, case_in = FALSE) {
     cbind(docvars(tokens)) %>%
     rename_with(~ substr(.x, 1, 3), starts_with(c("pos", "neg"))) %>%
     mutate(sentiment = (pos - neg) / (pos + neg),
-           fre = pos + neg,
+           matches = pos + neg,
            diff = sent_hc_z - sentiment)
 
   return(sent_df)
@@ -35,39 +35,42 @@ dict_run <- function(data, dict, case_in = FALSE) {
 
 # function to test reliability of methods
 test_sent <- function(data, num = TRUE, freq = TRUE) {
-
+  
+  # 1. standardize sentiment scale & count more if more than two 2 SD differ
   sent_df <- mutate(data,
                     sent_z = scale(sentiment),
-                    diff1 = abs(sent_hc_z - sent_z) > 1,
-                    diff2 = abs(sent_hc_z - sent_z) > 2)
+                    diff = abs(sent_hc_z - sent_z) > 2)
 
-  if (num == TRUE) {
-    num <- nrow(sent_df[sent_df$fre > 0,])
-  }
-  if (num == FALSE) {
-    num <- nrow(filter(sent_df, !is.na(sentiment)))
-  }
+  # 2. get all four values, depending on input
+  if (num == TRUE)  num <- nrow(sent_df[sent_df$fre > 0,])
+  if (num == FALSE) num <- nrow(filter(sent_df, !is.na(sentiment)))
 
-  cor <- as.numeric(cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs"))
-  diff1 <- nrow(filter(sent_df, diff1 == TRUE))
-  diff2 <- nrow(filter(sent_df, diff2 == TRUE))
+  cor <- cor(sent_df$sent_hc_z, sent_df$sent_z, use = "complete.obs") %>% 
+    as.numeric() %>% 
+    round(2)
 
-  test <- list(num = num, cor = cor, diff = list("> 1 sd" = diff1,
-                                                 "> 2 sd" = diff2))
+  if (freq == TRUE)  matches <- round(mean(sent_df$matches, na.rm = TRUE), 2)
+  if (freq == FALSE) matches <- NA
+  
+  diff <- nrow(filter(sent_df, diff == TRUE))
+  
+  # 3. create list and return as data.frame with column names
+  test_ls <- list(num = num, cor = cor, matches = matches, diff = diff)
 
-  if (freq == TRUE) {
-    fre  <- mean(sent_df$fre, na.rm = TRUE)
-    test <- append(test, list(fre = fre))
-  }
-
-  return(test)
+  return(as.data.frame(test_ls, col.names = c("N", "Cor", "Matches", "Diff")))
 }
 
 
-
 # prepare empty list to store results from different methods
+test_results <- 
+  data.frame(Source = character(), Preprocessing = character(),
+             Negation = logical(), Similarity = numeric(),
+             Negative = numeric(), Positive = numeric(),
+             N = numeric(), Cor = numeric(), Matches = numeric(), Diff = numeric())
+
 test <- list()
 saveRDS(test, "../data/test_results.RDS")
+
 
 
 # 1. Dictionary: sentiWS
@@ -96,3 +99,31 @@ source("3_mthds_8_wordscores.R")
 
 # 9. Wordfish
 source("3_mthds_9_wordfish.R")
+
+
+
+
+
+result.table <- data.frame(
+  Source = c(rep("SentiWS", 4), rep("Rauh", 4), rep("GERVader", 2),
+             rep("GloVe", 4), rep("GloVe", 4), rep("GloVe", 3), rep("GloVe", 3),
+             rep("Wordscores", 2), rep("Wordfish", 2)),
+  Preprocessing = c(rep("Minimal", 2), rep("Maximal", 2), 
+                    rep("Minimal", 2), rep("Maximal", 2))
+)
+
+
+columns <- c("Source", "Preprocessing", "Negation", "Similarity", "Negative", 
+             "Positive", "N", "Cor", "Matches", "Diff")
+
+
+
+a <- data.frame(Source = "SentiWS", Preprocessing = "Minimal", Negation = "FALSE", 
+                Similarity = NA, Negative = 15559, Positive = 15591, 
+                N = test$sws$min$num, Cor = test$sws$min$cor, 
+                Matches = test$sws$min$fre, diff = test$sws$min$diff[[2]])
+
+list("SentiWS", "Minimal", FALSE, NA, 15559, 15591, test$sws$min$num, 
+     test$sws$min$cor, test$sws$min$fre, test$sws$min$diff[[2]])
+
+c <- as.data.frame(list(NA, 15529, 12391, test$sws$min$num))
