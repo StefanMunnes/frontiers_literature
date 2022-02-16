@@ -25,8 +25,10 @@ revs_coded_raw <- lapply(coding_csvs, read.csv, fileEncoding = "UTF-8") %>%
   ungroup()
 
 
-group_by(revs_coded_raw, coder, rev_n) %>%
-  summarize(reviews = n())
+# count unique and double coded reviews
+group_by(revs_coded_raw, rev_n) %>%
+  summarize(reviews = n()) %>% 
+  mutate(reviews = ifelse(rev_n == 2, reviews / 2, reviews))
 
 
 
