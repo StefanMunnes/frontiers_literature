@@ -22,6 +22,7 @@ pacman::p_load(
   "stringr",
   "text2vec",
   "tibble",
+  "tictoc",
   "tidyr",
   "vroom",
   "word2vec"
