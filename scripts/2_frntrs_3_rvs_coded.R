@@ -18,7 +18,16 @@ revs_coded_raw <- lapply(coding_csvs, read.csv, fileEncoding = "UTF-8") %>%
   # keep just reviews with valid sentiment rating
   filter(between(sentiment, 1, 7)) %>%
 
-  mutate(coder = factor(str_sub(file, -1, -1), labels = paste0("Rater", 1:7)))
+  mutate(coder = factor(str_sub(file, -1, -1), labels = paste0("Rater", 1:7))) %>% 
+  
+  group_by(rev_id) %>%
+  mutate(rev_n = n()) %>% 
+  ungroup()
+
+
+group_by(revs_coded_raw, coder, rev_n) %>%
+  summarize(reviews = n())
+
 
 
 # recode double-coded sentiments from long to wide format
