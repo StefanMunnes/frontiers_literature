@@ -1,5 +1,6 @@
 if(!require("pacman")) install.packages("pacman")
 pacman::p_load(
+  "bibtex",
   "devtools",
   "dplyr",
   "ggplot2",
@@ -27,6 +28,10 @@ pacman::p_load(
   "vroom",
   "word2vec"
 )
+
+# add citation of packages to bibtex file
+write.bib(.packages(), file = "../write_up/frontiers_lit.bib", append = TRUE)
+
 
 
 # 1. scrape all books and additional informations from Perlentaucher
