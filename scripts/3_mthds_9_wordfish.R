@@ -3,9 +3,6 @@
 # Load data
 load("../data/frontiers_reviews_coded_prep.Rdata")
 
-# Start timer
-tic()
-
 # Run on minimally and maximally preprocessed
 sent_wf <- c("min", "max") %>%
   
@@ -42,6 +39,9 @@ sent_wf <- c("min", "max") %>%
     
     # ---- 2 Perform wordfish analysis ----
     
+    # Start timer
+    tic()
+    
     # Train and predict
     tmod_wf <- textmodel_wordfish(revs_dfm)
 
@@ -51,29 +51,47 @@ sent_wf <- c("min", "max") %>%
                            psi = tmod_wf$psi) %>%
       arrange(-psi)
     
-    # # Plot word scores
-    # textplot_scale1d(tmod_wf, margin = "features", highlighted = c("hymnisch", "jubelt",
-    #                                                                "nicht",
-    #                                                                "haar", "verriss"))
-    
     # Scored texts in data frame
     scrs_text_wf <-
       tibble(doc_id = tmod_wf$docs,
              sentiment = tmod_wf$theta) %>%
       arrange(-sentiment)
     
+    # Stop timer
+    runtime_wf <- toc()
+    
     # Merge with original data
     revs_df %<>%
       left_join(scrs_text_wf, by = "doc_id")
     
+    # Plot word scores
+    scrs_feat_wf %>%
+      filter(!is.na(score)) %>%
+      ggplot(aes(x = score, y = psi)) +
+      geom_point(data = . %>% filter(!term %in% c("hymnisch", "jubelt", "nicht", "haar", "verriss", "bach", "komponist")),
+                 color = "grey65") +
+      geom_point(data = . %>% filter(term %in% c("hymnisch", "jubelt", "nicht", "haar", "verriss", "bach", "komponist")),
+                 color = "grey30") +
+      geom_text_repel(data = . %>% filter(term %in% c("hymnisch", "jubelt", "nicht", "haar", "verriss", "bach", "komponist")),
+                      aes(label = term),
+                      seed = 42,
+                      direction = "both",
+                      point.size = 1,
+                      min.segment.length = 99,
+                      color = "grey30",
+                      size = 3.5) +
+      theme_minimal() +
+      xlab("Estimated sentiment") +
+      ylab("Term fixed effect")
+    ggsave(filename = paste0("../graphs/wordfish_", i, ".png"))
+    ggsave(filename = paste0("../graphs/wordfish_", i, ".pdf"))
+    
     # Combine in list
     list(text = revs_df,
-         feat = scrs_feat_wf)
+         feat = scrs_feat_wf,
+         time = with(runtime_wf, toc - tic))
     
   })
-
-# Stop timer
-runtime_wf <- toc()
 
 # Name list elements
 names(sent_wf) <- c("min", "max")

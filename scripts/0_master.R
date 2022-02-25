@@ -4,6 +4,7 @@ pacman::p_load(
   "devtools",
   "dplyr",
   "ggplot2",
+  "ggrepel",
   "irr",
   "irrNA",
   "magrittr",

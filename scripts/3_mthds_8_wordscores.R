@@ -3,9 +3,6 @@
 # Load data
 load("../data/frontiers_reviews_coded_prep.Rdata")
 
-# Start timer
-tic()
-
 # Run on minimally and maximally preprocessed
 sent_ws <- c("min", "max") %>%
 
@@ -50,6 +47,9 @@ sent_ws <- c("min", "max") %>%
     
     # ---- 2 Perform wordscores analysis ----
     
+    # Start timer
+    tic()
+    
     # Training set
     train_dfm <-
       revs_dfm %>%
@@ -62,19 +62,15 @@ sent_ws <- c("min", "max") %>%
     scrs_feat_ws <-
       full_join(
         tmod_ws$wordscores %>%
-          tibble(score = .) %>%
+          data.frame(score = .) %>%
           rownames_to_column(var = "term"),
         tmod_ws$x %>%
           colSums() %>% log() %>%
-          tibble(logfreq = .) %>%
+          data.frame(logfreq = .) %>%
           rownames_to_column(var = "term"),
         by = "term") %>%
+      tibble() %>%
       arrange(-logfreq)
-    
-    # # Plot wordscores
-    # textplot_scale1d(tmod_ws, margin = "features", highlighted = c("hymnisch", "jubelt",
-    #                                                                "nicht",
-    #                                                                "haar", "verriss"))
     
     # Estimation set
     estim_dfm <- revs_dfm %>%
@@ -94,18 +90,41 @@ sent_ws <- c("min", "max") %>%
       rename(., sentiment = `.`) %>%
       arrange(-sentiment)
     
+    # Stop timer
+    runtime_ws <- toc()
+    
     # Merge with original data
     revs_df %<>%
       left_join(scrs_text_ws, by = "doc_id")
     
+    # Plot wordscores
+    scrs_feat_ws %>%
+      filter(!is.na(score)) %>%
+      ggplot(aes(x = score, y = logfreq)) +
+      geom_point(data = . %>% filter(!term %in% c("hymnisch", "jubelt", "nicht", "haar", "verriss")),
+                 color = "grey65") +
+      geom_point(data = . %>% filter(term %in% c("hymnisch", "jubelt", "nicht", "haar", "verriss")),
+                 color = "grey30") +
+      geom_text_repel(data = . %>% filter(term %in% c("hymnisch", "jubelt", "nicht", "haar", "verriss")),
+                      aes(label = term),
+                      seed = 42,
+                      direction = "both",
+                      point.size = 1,
+                      min.segment.length = 99,
+                      color = "grey30",
+                      size = 3.5) +
+      theme_minimal() +
+      xlab("Estimated sentiment") +
+      ylab("Log frequency")
+    ggsave(filename = paste0("../graphs/wordscores_", i, ".png"))
+    ggsave(filename = paste0("../graphs/wordscores_", i, ".pdf"))
+    
     # Combine in list
     list(text = revs_df,
-         feat = scrs_feat_ws)
+         feat = scrs_feat_ws,
+         time = with(runtime_ws, toc - tic))
     
   })
-
-# Stop timer
-runtime_ws <- toc()
 
 # Name list elements
 names(sent_ws) <- c("min", "max")
