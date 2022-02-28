@@ -1,6 +1,6 @@
 
 # ---- 1. Datensatz mit Autor:in als Beobachtungseinheit ----
-load("../data/pt_all_raw_books.Rdata")
+load("../data/pt_all_raw_books.RDS")
 
 pt_authors_df <- bind_rows(lapply(pt_books_df_ls, bind_rows)) %>%
   group_by(url_author) %>%
@@ -15,7 +15,7 @@ pt_authors_df <- bind_rows(lapply(pt_books_df_ls, bind_rows)) %>%
          author = ifelse(str_detect(author, "(Di Cesare)|(von Franckenstein)|(de Smet)|(de Mello)"),
                          str_remove(author, ","), author))
 
-save(pt_authors_df, file = "../data/pt_all_authors.Rdata")
+saveRDS(pt_authors_df, file = "../data/pt_all_authors.RDS")
 
 
 # ---- 2. Datensatz mit Rezenssionen als Beobachtungseinheit ----

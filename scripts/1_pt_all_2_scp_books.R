@@ -89,4 +89,4 @@ pt_books_df_ls <- lapply(letters, function(letter) {
 
 names(pt_books_df_ls) <- letters
 
-save(pt_books_df_ls, file = "data/pt_all_raw_books.Rdata")
+save(pt_books_df_ls, file = "../data/pt_all_raw_books.RDS")
