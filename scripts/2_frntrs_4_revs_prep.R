@@ -118,16 +118,16 @@ save(revs_coded_min, revs_coded_max,
 # ---- 5. get descriptive statistics of corpus after preprocessing steps ----
 
 revs_stats_ls <- lapply(list(min = revs_min_ls, max = revs_max_ls), function(i) {
-  
+
     lapply(i, function(x) {
-    
+
     corpus <- vapply(x, paste, FUN.VALUE = character(1), collapse = " ") %>%
       corpus()
-    
-    stats <- summary(corpus, n = length(corpus)) %>% 
-      select(Types, Tokens) %>% 
+
+    stats <- summary(corpus, n = length(corpus)) %>%
+      select(Types, Tokens) %>%
       summary()
-      
+
     return(stats)
   })
 })

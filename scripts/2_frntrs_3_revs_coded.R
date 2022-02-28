@@ -18,16 +18,16 @@ revs_coded_raw <- lapply(coding_csvs, read.csv, fileEncoding = "UTF-8") %>%
   # keep just reviews with valid sentiment rating
   filter(between(sentiment, 1, 7)) %>%
 
-  mutate(coder = factor(str_sub(file, -1, -1), labels = paste0("Rater", 1:7))) %>% 
-  
+  mutate(coder = factor(str_sub(file, -1, -1), labels = paste0("Rater", 1:7))) %>%
+
   group_by(rev_id) %>%
-  mutate(rev_n = n()) %>% 
+  mutate(rev_n = n()) %>%
   ungroup()
 
 
 # count unique and double coded reviews
 group_by(revs_coded_raw, rev_n) %>%
-  summarize(reviews = n()) %>% 
+  summarize(reviews = n()) %>%
   mutate(reviews = ifelse(rev_n == 2, reviews / 2, reviews))
 
 
@@ -89,37 +89,37 @@ revs_coded_icc_1 <- group_by(revs_coded_raw, rev_id) %>%
             sent  = paste(sent,  collapse = ";")) %>%
   separate(coder, into = c("coder_1", "coder_2"), sep = ";") %>%
   separate(sent,  into = c("sent_1",  "sent_2"),  sep = ";", convert = T) %>%
-  
+
   distinct() %>%
 
   group_by(coder_1, coder_2) %>%
   na.omit() %>%
   mutate(intercept = 0, slope = 1,
          gr_n = n(),
-         gr_id = cur_group_id()) %>% 
+         gr_id = cur_group_id()) %>%
   ungroup()
 
 
 # calculate icc for each rater group
 revs_coded_icc_2 <- lapply(1:21, function(x) {
-  
+
   icc_list <- filter(revs_coded_data_plot, gr_id == x) %>%
-    select(sent_1, sent_2) %>% 
+    select(sent_1, sent_2) %>%
     icc()
-  
+
   icc_data <- data.frame(icc = round(icc_list[["value"]], 2))
-  
+
   return(icc_data)
-  
-}) %>% 
-  bind_rows(.id = "gr_id") %>% 
+
+}) %>%
+  bind_rows(.id = "gr_id") %>%
   mutate(gr_id = as.numeric(gr_id))
 
 # add icc values to rater_groups
 revs_coded_icc_3 <- full_join(revs_coded_icc_1, revs_coded_icc_2)
 
 # create and add mirrored data from original for seccond axis
-revs_coded_icc_4 <- revs_coded_icc_3 %>% 
+revs_coded_icc_4 <- revs_coded_icc_3 %>%
   rename(coder_1 = coder_2, coder_2 = coder_1,
          sent_1  = sent_2,  sent_2  = sent_1) %>%
   bind_rows(revs_coded_icc_3)
@@ -138,9 +138,9 @@ revs_coded_plot <- ggplot(revs_coded_icc_4, aes(x = sent_1, y = sent_2)) +
         panel.grid.minor = element_blank(),
         axis.text = element_text(size = 7.5))
 
-ggsave(filename = "../graphs/revs_coded_icc.pdf", revs_coded_plot, 
+ggsave(filename = "../graphs/revs_coded_icc.pdf", revs_coded_plot,
        width = 20, height = 20, units = "cm")
-ggsave(filename = "../graphs/revs_coded_icc.eps", revs_coded_plot, 
+ggsave(filename = "../graphs/revs_coded_icc.eps", revs_coded_plot,
        width = 20, height = 20, units = "cm")
-ggsave(filename = "../graphs/revs_coded_icc.jpeg", revs_coded_plot, 
+ggsave(filename = "../graphs/revs_coded_icc.jpeg", revs_coded_plot,
        width = 20, height = 20, units = "cm")

@@ -1,6 +1,3 @@
-if(!require("pacman")) install.packages("pacman")
-pacman::p_load( "dplyr", "tidyr", "stringr")
-
 
 # 1. scrape list of all authors from perlentaucher
 source("1_pt_all_1_scp_authors.R", print.eval = T, encoding = "utf-8")
