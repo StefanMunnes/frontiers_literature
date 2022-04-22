@@ -103,7 +103,7 @@ revs_coded_icc_1 <- group_by(revs_coded_raw, rev_id) %>%
 # calculate icc for each rater group
 revs_coded_icc_2 <- lapply(1:21, function(x) {
 
-  icc_list <- filter(revs_coded_data_plot, gr_id == x) %>%
+  icc_list <- filter(revs_coded_icc_1, gr_id == x) %>%
     select(sent_1, sent_2) %>%
     icc()
 
@@ -143,4 +143,4 @@ ggsave(filename = "../graphs/revs_coded_icc.pdf", revs_coded_plot,
 ggsave(filename = "../graphs/revs_coded_icc.eps", revs_coded_plot,
        width = 20, height = 20, units = "cm")
 ggsave(filename = "../graphs/revs_coded_icc.jpeg", revs_coded_plot,
-       width = 20, height = 20, units = "cm")
+       width = 20, height = 20, units = "cm", dpi = 500)
